@@ -5,3 +5,5 @@ export const add2 = add(2);
 export const add3 = add(3);
 
 export const convertToString = (number: number): string => `${number}`;
+
+export const typeOf = (value: unknown) => typeof value;

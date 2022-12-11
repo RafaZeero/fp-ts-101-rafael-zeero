@@ -33,3 +33,22 @@ const success: Right<string> = {
 if (isLeft(error)) console.log('Is Left');
 
 if (isRight(success)) console.log(success.value, ' Is Right');
+
+// Task function will never break or throw error
+const isUrl = async (url: string): Promise<boolean> => {
+  try {
+    const result = new URL(url);
+    console.log(result);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+// Task type
+type Task<A> = () => Promise<A>;
+
+// Or it can be use the type Lazy
+
+type Lazy<A> = () => A;
+type TaskWithLazy<A> = Lazy<Promise<A>>;

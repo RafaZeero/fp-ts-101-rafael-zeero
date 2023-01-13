@@ -9,11 +9,13 @@ dotenv.config()
 const app = express()
 const PORT = process.env['PORT'] || 3333
 
+const users: User[] = []
+
 app.use(express.urlencoded({ extended: true })) /** Allow req.body */
 app.use(express.json())
 
 app.get('/', (req: Request, res: Response) => {
-  res.status(200).send('henlo !!')
+  res.status(200).send(users)
 })
 
 app.post('/', (req: Request, res: Response) => {
@@ -24,7 +26,7 @@ app.post('/', (req: Request, res: Response) => {
     O.map(user => user)
   )
 
-  O.isSome(response) ? res.send(response.value) : res.send('not valid')
+  O.isSome(response) ? users.push(response.value) && res.send(response.value) : res.send('not valid')
 })
 
 app.listen(PORT, () => {

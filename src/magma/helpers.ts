@@ -5,3 +5,5 @@ export const getPipeableConcat =
   (second: A) =>
   (first: A): A =>
     M.concat(first, second)
+
+export const log = (message: string) => (value: unknown) => console.log(message + value)

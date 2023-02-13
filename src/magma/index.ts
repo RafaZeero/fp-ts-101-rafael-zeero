@@ -9,10 +9,11 @@ const MagmaSum: Magma<number> = {
   concat: (first, second) => first + second,
 }
 
-const concat = getPipeableConcat(MagmaSub)
+const sub = getPipeableConcat(MagmaSub)
+const sum = getPipeableConcat(MagmaSum)
 
 import { pipe } from 'fp-ts/lib/function'
 
-pipe(10, concat(2), concat(2), concat(-2), log('Magma sub: '))
+pipe(10, sum(2), sum(2), sum(-2), log('Magma result: '))
 
-pipe
+pipe(20, sum(3), sub(1), sum(5), log('Magma result 2: '))

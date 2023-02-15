@@ -1,4 +1,5 @@
 import * as A from 'fp-ts/Array'
+import * as NEA from 'fp-ts/NonEmptyArray'
 import { pipe } from 'fp-ts/lib/function'
 import { log } from './helper'
 import * as E from 'fp-ts/Either'
@@ -27,6 +28,14 @@ const array03 = () =>
     ),
     log('(FROM ARRAY03) Lookup: '),
   )
+
+const array04 = () => pipe(foo, A.head, log('from head')) // returns an option
+const array05 = () => {
+  if (A.isNonEmpty(foo)) return pipe(foo, NEA.head, log('from head')) // returns the value itself
+}
+
 // array01()
 // array02()
-array03()
+// array03'()
+array04()
+array05()

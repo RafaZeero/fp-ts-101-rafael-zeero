@@ -12,11 +12,14 @@ const array01 = () =>
     log('(FROM ARRAY01) : '),
   )
 
-const foo = [1, 2, 3, 1, 2, 3, 1, 2, 3]
+const foo = [1, 2, 3, 1, 2, 3, 1, 2, 3, 1]
 const bar = ['a', 'b', 'c']
 const foobar = [
   { name: 'rafa', age: 12 },
   { name: 'dandan', age: 15 },
+  { name: 'ray', age: 25 },
+  { name: 'gigi', age: 22 },
+  { name: 'luna', age: 32 },
 ]
 
 const array02 = () => pipe(foo, A.zip(bar), log('(FROM ARRAY02) Zip: '))
@@ -40,13 +43,23 @@ const array05 = () => {
 
 const array06 = () =>
   pipe(
-    A.array.filter(foobar, n => n.age > 14),
+    A.array.filter(foobar, n => n.age > 20),
     log('[array 06] from filter: '),
+  )
+
+const array07 = () =>
+  pipe(
+    A.array.partitionMap(foobar, n => (n.age < 20 ? E.left(n) : E.right(n))),
+    x => x,
+    // ({ left: foos, right: bars }) => foos,
+    // ({ left: foos, right: bars }) => bars,
+    log('[array 07] from partitionMap: '),
   )
 
 // array01()
 // array02()
 // array03'()
-array04()
-array05()
-array06()
+// array04()
+// array05()
+// array06()
+array07()

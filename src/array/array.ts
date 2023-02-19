@@ -3,6 +3,8 @@ import * as NEA from 'fp-ts/NonEmptyArray'
 import { pipe } from 'fp-ts/lib/function'
 import { log } from './helper'
 import * as E from 'fp-ts/Either'
+import { Monoid, monoidSum } from 'fp-ts/lib/Monoid'
+import { Semigroup } from 'fp-ts/lib/Semigroup'
 
 const array01 = () =>
   pipe(
@@ -56,10 +58,34 @@ const array07 = () =>
     log('[array 07] from partitionMap: '),
   )
 
+const semigroupMax: Semigroup<number> = {
+  concat: Math.max,
+}
+
+const monoidMax: Monoid<number> = {
+  concat: semigroupMax.concat,
+  empty: Number.NEGATIVE_INFINITY,
+}
+
+const array08 = () =>
+  pipe(
+    A.array.partitionMap(foobar, n => (n.age < 20 ? E.left(n) : E.right(n))),
+    ({ left: foos, right: bars }) => {
+      const sum = A.array.foldMap(monoidSum)(foos, foo => foo.age)
+      const max = A.array.foldMap(monoidMax)(bars, bar => bar.age)
+
+      console.log({ sum, max })
+
+      return sum * max
+    },
+    log('sum * max: '),
+  )
+
 // array01()
 // array02()
 // array03'()
 // array04()
 // array05()
 // array06()
-array07()
+// array07()
+array08()

@@ -3,7 +3,7 @@ import * as NEA from 'fp-ts/NonEmptyArray'
 import { pipe } from 'fp-ts/lib/function'
 import { log } from './helper'
 import * as E from 'fp-ts/Either'
-import { Monoid, monoidSum } from 'fp-ts/lib/Monoid'
+import * as M from 'fp-ts/lib/Monoid'
 import { Semigroup } from 'fp-ts/lib/Semigroup'
 
 const array01 = () =>
@@ -62,7 +62,7 @@ const semigroupMax: Semigroup<number> = {
   concat: Math.max,
 }
 
-const monoidMax: Monoid<number> = {
+const monoidMax: M.Monoid<number> = {
   concat: semigroupMax.concat,
   empty: Number.NEGATIVE_INFINITY,
 }
@@ -71,8 +71,8 @@ const array08 = () =>
   pipe(
     A.array.partitionMap(foobar, n => (n.age < 20 ? E.left(n) : E.right(n))),
     ({ left: foos, right: bars }) => {
-      const sumLower = A.array.foldMap(monoidSum)(foos, foo => foo.age) // sum values below 20
-      const sumHigher = A.array.foldMap(monoidSum)(bars, bar => bar.age) // sum values equal or higher than 20
+      const sumLower = A.array.foldMap(M.monoidSum)(foos, foo => foo.age) // sum values below 20
+      const sumHigher = A.array.foldMap(M.monoidSum)(bars, bar => bar.age) // sum values equal or higher than 20
 
       console.log({ sumLower, sumHigher })
 

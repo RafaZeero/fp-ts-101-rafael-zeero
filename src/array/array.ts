@@ -78,7 +78,7 @@ const array08 = () =>
 
       return { sumLower, sumHigher }
     },
-    log('sum * max: '),
+    log('sumLower and sumHigher than 20: '),
   )
 
 // array01()

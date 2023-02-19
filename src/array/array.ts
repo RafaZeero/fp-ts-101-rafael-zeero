@@ -71,12 +71,12 @@ const array08 = () =>
   pipe(
     A.array.partitionMap(foobar, n => (n.age < 20 ? E.left(n) : E.right(n))),
     ({ left: foos, right: bars }) => {
-      const sum = A.array.foldMap(monoidSum)(foos, foo => foo.age)
-      const max = A.array.foldMap(monoidMax)(bars, bar => bar.age)
+      const sumLower = A.array.foldMap(monoidSum)(foos, foo => foo.age) // sum values below 20
+      const sumHigher = A.array.foldMap(monoidSum)(bars, bar => bar.age) // sum values equal or higher than 20
 
-      console.log({ sum, max })
+      console.log({ sumLower, sumHigher })
 
-      return sum * max
+      return { sumLower, sumHigher }
     },
     log('sum * max: '),
   )

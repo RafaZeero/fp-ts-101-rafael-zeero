@@ -85,9 +85,9 @@ const array09 = (arr1: Array<number>, arr2: Array<number>): void =>
   pipe(
     arr1,
     A.zip(arr2),
-    A.chain(([par1, par2]) =>
+    A.chain(par =>
       pipe(
-        [par1, par2],
+        par,
         A.map(val => val * 2),
       ),
     ),

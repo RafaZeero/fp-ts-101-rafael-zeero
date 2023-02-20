@@ -29,10 +29,17 @@ const either02 = () =>
       pipe(
         E.right(['a', 'b', 'c']),
         E.map(arr2 => A.zip(v)(arr2)),
+        E.mapLeft(() => 'error'),
       ),
     ),
-    E.flatten,
-    E.map(pairs => A.array.reduce(pairs, '', (a, b) => `${a} ${b}`)),
+    E.chain(pair =>
+      pipe(
+        pair,
+        E.map((pairs: [string, string][]) => A.array.reduce(pairs, '', (a, b) => `${a} ${b}`)),
+      ),
+    ),
+    // E.flatten,
+    // E.map(pairs => A.array.reduce(pairs, '', (a, b) => `${a} ${b}`)),
     E.foldMap(M.monoidString)(v => v),
     log('either02 :'),
   )

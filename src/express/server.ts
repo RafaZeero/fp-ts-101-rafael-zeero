@@ -23,11 +23,9 @@ app.get('/', (req: Request, res: Response) => {
   res.status(200).send(users)
 })
 
-app.post('/login', (req: Request, res: Response) => {
-  const cred = O.fromNullable(req.body as typeof user)
-
+app.post('/login', (req: Request, res: Response) =>
   pipe(
-    cred,
+    O.fromNullable(req.body as typeof user),
     E.fromOption(() => 'aa'),
     x => x,
     E.filterOrElse(
@@ -36,8 +34,8 @@ app.post('/login', (req: Request, res: Response) => {
     ),
     E.map(() => res.send('logged in')),
     E.mapLeft(error => res.send(error)),
-  )
-})
+  ),
+)
 
 app.post('/', (req: Request, res: Response) => {
   const user = O.fromNullable<User>(req.body.user)

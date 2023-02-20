@@ -11,6 +11,11 @@ const PORT = process.env['PORT'] || 3333
 
 const users: User[] = []
 
+const user = {
+  login: 'rafa',
+  senha: '123',
+}
+
 app.use(express.urlencoded({ extended: true })) /** Allow req.body */
 app.use(express.json())
 
@@ -18,15 +23,33 @@ app.get('/', (req: Request, res: Response) => {
   res.status(200).send(users)
 })
 
+app.post('/login', (req: Request, res: Response) => {
+  const cred = O.fromNullable(req.body as typeof user)
+
+  pipe(
+    cred,
+    E.fromOption(() => 'aa'),
+    x => x,
+    E.filterOrElse(
+      credentials => credentials.login === user.login && credentials.senha === user.senha,
+      () => 'error invalid credentials',
+    ),
+    E.map(() => res.send('logged in')),
+    E.mapLeft(error => res.send(error)),
+  )
+})
+
 app.post('/', (req: Request, res: Response) => {
   const user = O.fromNullable<User>(req.body.user)
 
   const response = pipe(
     user,
-    O.map(user => user)
+    O.map(user => user),
   )
 
-  O.isSome(response) ? users.push(response.value) && res.send(response.value) : res.send('not valid')
+  O.isSome(response)
+    ? users.push(response.value) && res.send(response.value)
+    : res.send('not valid')
 })
 
 app.listen(PORT, () => {

@@ -81,6 +81,20 @@ const array08 = () =>
     log('sumLower and sumHigher than 20: '),
   )
 
+const array09 = (arr1: Array<number>, arr2: Array<number>): void =>
+  pipe(
+    arr1,
+    A.zip(arr2),
+    A.chain(([par1, par2]) =>
+      pipe(
+        [par1, par2],
+        A.map(val => val * 2),
+      ),
+    ),
+    x => x,
+    log('dobrou! '),
+  )
+
 // array01()
 // array02()
 // array03'()
@@ -88,4 +102,5 @@ const array08 = () =>
 // array05()
 // array06()
 // array07()
-array08()
+// array08()
+array09([1, 2, 3], [5, 6, 7])

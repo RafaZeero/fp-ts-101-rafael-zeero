@@ -21,10 +21,10 @@ app.use(express.json())
 
 app.get('/', (req: Request, res: Response) => {
   pipe(
-    O.fromNullable(req.body),
-    E.fromOption(() => 'no values in req.body'),
-    E.map(() => res.status(200).send(users)),
-    E.mapLeft(error => res.send(error)),
+    O.fromNullable(req.body.credentials),
+    E.fromOption(() => JSON.stringify({ error: 'Unauthorized. Invalid credentials' })),
+    E.map(() => res.status(200).send(user)),
+    E.mapLeft(error => res.status(401).send(error)),
   )
 })
 

@@ -20,13 +20,18 @@ app.use(express.urlencoded({ extended: true })) /** Allow req.body */
 app.use(express.json())
 
 app.get('/', (req: Request, res: Response) => {
-  res.status(200).send(users)
+  pipe(
+    O.fromNullable(req.body),
+    E.fromOption(() => 'no values in req.body'),
+    E.map(() => res.status(200).send(users)),
+    E.mapLeft(error => res.send(error)),
+  )
 })
 
 app.post('/login', (req: Request, res: Response) =>
   pipe(
     O.fromNullable(req.body as typeof user),
-    E.fromOption(() => 'aa'),
+    E.fromOption(() => 'no values in req.body'),
     x => x,
     E.filterOrElse(
       credentials => credentials.login === user.login && credentials.senha === user.senha,

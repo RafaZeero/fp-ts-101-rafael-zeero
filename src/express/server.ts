@@ -1,9 +1,11 @@
 import express, { Request, Response } from 'express'
 import * as dotenv from 'dotenv'
 import { pipe } from 'fp-ts/function'
-import * as TE from 'fp-ts/TaskEither'
 import * as E from 'fp-ts/Either'
 import * as O from 'fp-ts/Option'
+import pino from 'pino'
+import { pinoHttp } from 'pino-http'
+import PinoPretty from 'pino-pretty'
 dotenv.config()
 
 const app = express()
@@ -16,8 +18,33 @@ const user = {
   senha: '123',
 }
 
+const destination = [
+  { stream: PinoPretty() },
+  { stream: pino.destination('src/express/custom.log') },
+]
+
+export const logger = pino(
+  {
+    name: 'testing-pino',
+    base: { pid: undefined },
+  },
+  pino.multistream(destination),
+)
+
+const pinoMiddleware = pinoHttp({
+  logger: logger,
+  autoLogging: true,
+  customReceivedMessage: () => 'received',
+})
+
 app.use(express.urlencoded({ extended: true })) /** Allow req.body */
 app.use(express.json())
+app.use(pinoMiddleware)
+
+app.get('/log', (req: Request, res: Response) => {
+  logger.info('connected')
+  res.send('noice')
+})
 
 app.get('/', (req: Request, res: Response) => {
   pipe(

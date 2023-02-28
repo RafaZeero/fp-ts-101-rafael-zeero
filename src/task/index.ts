@@ -14,4 +14,7 @@ const boolTask: T.Task<boolean> = async () => {
 const asyncFunction = () =>
   new Promise((resolve, reject) => resolve(setTimeout(() => console.log('timed out'), 5000)))
 
+const asyncFunction2 = () => T.delay(2000)(async () => 'async function 2 run')
+
 boolTask()
+asyncFunction2()().then(console.log)

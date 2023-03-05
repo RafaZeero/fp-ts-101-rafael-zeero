@@ -18,6 +18,17 @@ const user = {
   senha: '123',
 }
 
+const levels = {
+  emerg: 80,
+  fatal: 70,
+  crit: 60,
+  error: 50,
+  warn: 40,
+  notice: 30,
+  info: 20,
+  debug: 10,
+}
+
 const destination = [
   { stream: PinoPretty() },
   { stream: pino.destination('src/express/custom.log') },
@@ -31,11 +42,21 @@ export const logger = pino(
   pino.multistream(destination),
 )
 
-const pinoMiddleware = pinoHttp({
-  logger: logger,
-  autoLogging: true,
-  customReceivedMessage: () => 'received',
-})
+const pinoMiddleware = pinoHttp(
+  {
+    // customReceivedMessage: () => 'received',
+    customLevels: levels,
+    useOnlyCustomLevels: true,
+  },
+  pino.multistream(
+    [
+      { stream: PinoPretty() },
+      { stream: pino.destination('src/express/custom.log'), level: 'info' },
+      { stream: pino.destination('src/express/custom2.log'), level: 'info' },
+    ],
+    { levels },
+  ),
+)
 
 app.use(express.urlencoded({ extended: true })) /** Allow req.body */
 app.use(express.json())

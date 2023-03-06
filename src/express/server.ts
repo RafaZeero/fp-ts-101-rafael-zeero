@@ -30,6 +30,17 @@ app.get('/', (req: Request, res: Response) => {
     E.mapLeft(error => res.status(401).send(error)),
   );
 });
+const createEither = (value: O.Option<string>): E.Either<Error, string> => {
+  return E.either.of(value) as E.Either<Error, string>;
+};
+
+app.get('/save-local-storage/:value', (req: Request, res: Response) => {
+  pipe(
+    O.fromNullable(req.params['value']),
+    E.fromNullable(createEither),
+    E.map(value => localStorage.setItem('valor', value)),
+  );
+});
 
 app.post('/login', (req: Request, res: Response) =>
   pipe(

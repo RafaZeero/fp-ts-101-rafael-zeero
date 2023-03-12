@@ -1,34 +1,104 @@
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/lib/function';
-import { gte } from 'lodash';
+import * as t from 'io-ts';
+import { failure } from 'io-ts/PathReporter';
+import { withMessage } from 'io-ts-types';
+import { gt, gte } from 'lodash';
+import { Candidate } from './helpers';
 
-const isValid = (num: { val1: number; val2: number }) => gte(num.val1, 4) && gte(num.val2, 4);
-const toNumber = (obj: { val1: string; val2: string }): { val1: number; val2: number } => ({
-  val1: Number(obj.val1),
-  val2: Number(obj.val2),
-});
-
-const checkNum = (obj: { val1: number; val2: number }) => {
-  if (obj.val1 < 4 && obj.val2 < 4) return `Both values lower than 4`;
-  if (obj.val1 < 4) return `val1 is lower than 4`;
-  if (obj.val2 < 4) return `val2 is lower than 4`;
-  return '';
+const candidateT = {
+  email: 'nice@mail.com',
+  english1: '',
+  'Rate you [Reading]...': '6',
+  name: 'Daniel',
 };
 
-// * Test if value is higher than 4, then create a message
-const testValue = (value: { val1: string; val2: string }) => {
+const fromExcel = (candidate: any): RawCandidate => {
+  console.log('fromExcel: ', candidate);
+
+  return {
+    english: {
+      listening: parseInt(
+        candidate[EXCEL_DESIGN_CANDIDATE.english_reading] ||
+          candidate[EXCEL_SALES_CANDIDATE.english_reading],
+      ),
+      reading: parseInt(
+        candidate[EXCEL_DESIGN_CANDIDATE.english_reading] ||
+          candidate[EXCEL_SALES_CANDIDATE.english_reading],
+      ),
+      speaking: parseInt(
+        candidate[EXCEL_DESIGN_CANDIDATE.english_reading] ||
+          candidate[EXCEL_SALES_CANDIDATE.english_reading],
+      ),
+      writing: parseInt(
+        candidate[EXCEL_DESIGN_CANDIDATE.english_reading] ||
+          candidate[EXCEL_SALES_CANDIDATE.english_reading],
+      ),
+    },
+  } as RawCandidate;
+};
+
+type RawCandidate = {
+  english: {
+    reading: number;
+    listening: number;
+    writing: number;
+    speaking: number;
+  };
+};
+
+type ValidCandidate = t.OutputOf<typeof validCandidateCodec>;
+
+enum EXCEL_SALES_CANDIDATE {
+  english_reading = 'Rate you [Reading]...',
+}
+
+enum EXCEL_DESIGN_CANDIDATE {
+  english_reading = 'Rate you 2 [Reading]...',
+}
+
+type ValidLevel = {
+  readonly Level: unique symbol;
+};
+
+export const validLevelCodec = withMessage(
+  t.brand(t.number, (value): value is t.Branded<number, ValidLevel> => isValid(value), 'Level'),
+  () => 'Invalid value!',
+);
+
+export type Valid = t.TypeOf<typeof validLevelCodec>;
+
+const isValid = (value: number): boolean => value >= 0 && value <= 5;
+
+const validCandidateCodec = t.type({
+  english: t.type({
+    reading: validLevelCodec,
+    listening: validLevelCodec,
+    writing: validLevelCodec,
+    speaking: validLevelCodec,
+  }),
+});
+
+const evaluate = (candidate: typeof candidateT) => {
   return pipe(
-    value,
-    toNumber,
-    E.fromPredicate(isValid, num => checkNum(num)),
-    E.mapLeft(message => `The final message is: ${message}`),
-    E.fold(
-      error => `${error}`,
-      () => `All values higher than 4`,
-    ),
+    candidate,
+    // transform to number
+    fromExcel,
+    validCandidateCodec.decode,
+    E.mapLeft(val => failure(val).join(':::')),
+    E.chain(E.fromPredicate(maiorQue3, error => `${error}`)),
+    // E.fromPredicate(maiorQue3, () => [{ message: 'invalid' }]),
+
+    // validate if > 3
+    // E.mapLeft(error => `error: ${error}`),
   );
 };
 
-const test = testValue({ val1: '4', val2: '4' });
+function maiorQue3(obj: ValidCandidate) {
+  // lodash
+  return gt(obj.english.listening, 3);
+}
 
-console.log(test);
+const testfpts = evaluate(candidateT);
+
+console.dir(testfpts);

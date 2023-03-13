@@ -1,10 +1,9 @@
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as t from 'io-ts';
-import { failure } from 'io-ts/PathReporter';
 import { withMessage } from 'io-ts-types';
-import { gt, gte } from 'lodash';
-import { Candidate } from './helpers';
+import { failure } from 'io-ts/PathReporter';
+import { gt } from 'lodash';
 
 const candidateT = {
   email: 'nice@mail.com',
@@ -57,18 +56,22 @@ enum EXCEL_DESIGN_CANDIDATE {
   english_reading = 'Rate you 2 [Reading]...',
 }
 
+// ================================================================
+
 type ValidLevel = {
   readonly Level: unique symbol;
 };
 
 export const validLevelCodec = withMessage(
   t.brand(t.number, (value): value is t.Branded<number, ValidLevel> => isValid(value), 'Level'),
-  () => 'Invalid value!',
+  () => 'Invalid value! Value should be between 0 and 5',
 );
 
 export type Valid = t.TypeOf<typeof validLevelCodec>;
 
 const isValid = (value: number): boolean => value >= 0 && value <= 5;
+
+// ================================================================
 
 const validCandidateCodec = t.type({
   english: t.type({

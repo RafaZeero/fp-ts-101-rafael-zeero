@@ -31,6 +31,18 @@ export const candidateCodec = t.type({
   }),
 });
 
+export const candidateNumberCodec = t.type({
+  name: t.string,
+  email: t.string,
+  english: t.type({
+    listening: t.number,
+    reading: t.number,
+    speaking: t.number,
+    writing: t.number,
+  }),
+});
+
 export type Candidate = t.TypeOf<typeof candidateCodec>;
+export type CandidateNumber = t.TypeOf<typeof candidateNumberCodec>;
 
 export type Evaluation2 = (candidate: Candidate) => E.Either<Error, any>;

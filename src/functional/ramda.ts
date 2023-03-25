@@ -11,6 +11,9 @@ const toSlug: ToSlug = input => {
   return encodedURI;
 };
 
-const slug = toSlug('This is a component');
+const ramdaToSlug: ToSlug = input => R.pipe(R.split(' '), R.map(R.toLower), R.join(''))(input);
+
+// const slug = toSlug('This is a component');
+const slug = ramdaToSlug('This is a component');
 
 console.log('slug: ', slug);

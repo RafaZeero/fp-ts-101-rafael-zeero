@@ -7,19 +7,19 @@ type Buzz = { fizz: string };
 
 const foo = { bar: 'henlo' } as Foo | undefined;
 
-const fizz = { buzz: undefined } as Fizz;
+const fizz = { buzz: { fizz: 'undefined' } } as Fizz;
 
-pipe(
-  foo,
-  O.fromNullable,
-  O.map(({ bar }: Foo) => bar),
-  console.log
-);
+// pipe(
+//   foo,
+//   O.fromNullable,
+//   O.map(({ bar }: Foo) => bar),
+//   console.log
+// );
 
 pipe(
   fizz,
   O.fromNullable,
-  O.map(({ buzz }) =>
+  O.chain(({ buzz }) =>
     pipe(
       buzz,
       O.fromNullable,

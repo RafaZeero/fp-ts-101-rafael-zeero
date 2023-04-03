@@ -16,4 +16,8 @@ const suffixAppend =
 
 const result2 = pipe('AwEsomE', toLower, suffixAppend('adding this'));
 
-console.log(result2);
+// console.log(result2);
+
+const result3 = flow(toLower, suffixAppend('I am a suffix hehe'))('hENlo!');
+
+console.log(result3);

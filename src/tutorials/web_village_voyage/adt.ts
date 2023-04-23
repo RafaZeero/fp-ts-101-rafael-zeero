@@ -62,19 +62,35 @@ const ADTS = () => {};
 import * as O from 'fp-ts/Option';
 
 // 📜 Option
-type MatchW = <A, B, C>(onNone: () => B, onSome: (a: A) => C) => (x: O.Option<A>) => B | C;
-const match: MatchW = (onNone, onSome) => x => O.isNone(x) ? onNone() : onSome(x.value);
-// * Match in fp-ts === Fold!
-// * MatchW in fp-ts === FoldW!
+// type MatchW = <A, B, C>(onNone: () => B, onSome: (a: A) => C) => (x: O.Option<A>) => B | C;
+// const match: MatchW = (onNone, onSome) => x => O.isNone(x) ? onNone() : onSome(x.value);
+// // * Match in fp-ts === Fold!
+// // * MatchW in fp-ts === FoldW!
 
-const maybeNum: O.Option<number> = O.some(12);
-const maybeNum2: O.Option<number> = O.none;
+// const maybeNum: O.Option<number> = O.some(12);
+// const maybeNum2: O.Option<number> = O.none;
+// const result = match(
+//   // 🔴 Pattern for when value is none
+//   () => -2,
+//   // 🟢 Pattern for when value is some
+//   (a: number) => `num is ${a}`
+//   // )(maybeNum);
+//   )(maybeNum2);
+
+//   console.log(result);
+
+import * as E from 'fp-ts/Either';
+
+// 📜 Either
+type Match = <E, A, B>(onLeft: (e: E) => B, onRight: (a: A) => B) => (x: E.Either<E, A>) => B;
+const match: Match = (onLeft, onRight) => x => E.isLeft(x) ? onLeft(x.left) : onRight(x.right);
+
+const errorOrNum = E.right(20);
+const errorOrNum2 = E.left('Not a number');
 const result = match(
-  // 🔴 Pattern for when value is none
-  () => -2,
-  // 🟢 Pattern for when value is some
-  (a: number) => `num is ${a}`
-  // )(maybeNum);
-)(maybeNum2);
+  error => `Error happened: ${error}`,
+  number => `Is number ${number}`
+  // )(errorOrNum);
+)(errorOrNum2);
 
 console.log(result);

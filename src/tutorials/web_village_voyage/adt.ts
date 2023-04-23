@@ -82,20 +82,46 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 
 // 📜 Either
-type MatchW = <E, A, B, C>(
-  onLeft: (e: E) => B,
-  onRight: (a: A) => C
-) => (x: E.Either<E, A>) => B | C;
-const match: MatchW = (onLeft, onRight) => x => E.isLeft(x) ? onLeft(x.left) : onRight(x.right);
-// // * Match in fp-ts === Fold!
-// // * MatchW in fp-ts === FoldW!
+// type MatchW = <E, A, B, C>(
+//   onLeft: (e: E) => B,
+//   onRight: (a: A) => C
+// ) => (x: E.Either<E, A>) => B | C;
+// const match: MatchW = (onLeft, onRight) => x => E.isLeft(x) ? onLeft(x.left) : onRight(x.right);
+// // // * Match in fp-ts === Fold!
+// // // * MatchW in fp-ts === FoldW!
 
-const errorOrNum = E.right(20);
-const errorOrNum2 = E.left('Not a number');
+// const errorOrNum = E.right(20);
+// const errorOrNum2 = E.left('Not a number');
+// const result = match(
+//   error => `Error happened: ${error}`,
+//   number => `Is number ${number}`
+//   // )(errorOrNum);
+// )(errorOrNum2);
+
+// console.log(result);
+
+type Nil = { _tag: 'Nil' };
+type Cons<A> = { _tag: 'Cons'; head: A; tail: List<A> };
+type List<A> = Nil | Cons<A>;
+
+const nil: List<never> = { _tag: 'Nil' };
+const cons = <A>(head: A, tail: List<A>): List<A> => ({
+  _tag: 'Cons',
+  head,
+  tail
+});
+const isNil = <A>(xs: List<A>): xs is Nil => xs._tag === 'Nil';
+
+// 📜 List
+type Match = <A, B>(onNil: () => B, onCons: (head: A, tail: List<A>) => B) => (xs: List<A>) => B;
+const match: Match = (onNil, onCons) => xs => isNil(xs) ? onNil() : onCons(xs.head, xs.tail);
+
+const myList: List<number> = cons(1, cons(2, cons(3, nil)));
+const myList2: List<number> = nil;
 const result = match(
-  error => `Error happened: ${error}`,
-  number => `Is number ${number}`
-  // )(errorOrNum);
-)(errorOrNum2);
+  () => `list is empty`,
+  (head: number, tail: List<number>) => `head is ${head}`
+  // )(myList);
+)(myList2);
 
 console.log(result);

@@ -62,15 +62,16 @@ const ADTS = () => {};
 import * as O from 'fp-ts/Option';
 
 // 📜 Option
-type Match = <A, B>(onNone: () => B, onSome: (a: A) => B) => (x: O.Option<A>) => B;
-
-const match: Match = (onNone, onSome) => x => O.isNone(x) ? onNone() : onSome(x.value);
+type MatchW = <A, B, C>(onNone: () => B, onSome: (a: A) => C) => (x: O.Option<A>) => B | C;
+const match: MatchW = (onNone, onSome) => x => O.isNone(x) ? onNone() : onSome(x.value);
+// * Match in fp-ts === Fold!
+// * MatchW in fp-ts === FoldW!
 
 const maybeNum: O.Option<number> = O.some(12);
 const maybeNum2: O.Option<number> = O.none;
 const result = match(
   // 🔴 Pattern for when value is none
-  () => `num does not exist`,
+  () => -2,
   // 🟢 Pattern for when value is some
   (a: number) => `num is ${a}`
   // )(maybeNum);

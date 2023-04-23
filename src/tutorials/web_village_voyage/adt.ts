@@ -100,28 +100,33 @@ import * as E from 'fp-ts/Either';
 
 // console.log(result);
 
-type Nil = { _tag: 'Nil' };
-type Cons<A> = { _tag: 'Cons'; head: A; tail: List<A> };
-type List<A> = Nil | Cons<A>;
+// type Nil = { _tag: 'Nil' };
+// type Cons<A> = { _tag: 'Cons'; head: A; tail: List<A> };
+// type List<A> = Nil | Cons<A>;
 
-const nil: List<never> = { _tag: 'Nil' };
-const cons = <A>(head: A, tail: List<A>): List<A> => ({
-  _tag: 'Cons',
-  head,
-  tail
-});
-const isNil = <A>(xs: List<A>): xs is Nil => xs._tag === 'Nil';
+// const nil: List<never> = { _tag: 'Nil' };
+// const cons = <A>(head: A, tail: List<A>): List<A> => ({
+//   _tag: 'Cons',
+//   head,
+//   tail
+// });
+// const isNil = <A>(xs: List<A>): xs is Nil => xs._tag === 'Nil';
+
+import * as L from 'fp-ts-contrib/List';
 
 // 📜 List
-type Match = <A, B>(onNil: () => B, onCons: (head: A, tail: List<A>) => B) => (xs: List<A>) => B;
-const match: Match = (onNil, onCons) => xs => isNil(xs) ? onNil() : onCons(xs.head, xs.tail);
+type Match = <A, B>(
+  onNil: () => B,
+  onCons: (head: A, tail: L.List<A>) => B
+) => (xs: L.List<A>) => B;
+const match: Match = (onNil, onCons) => xs => L.isNil(xs) ? onNil() : onCons(xs.head, xs.tail);
 
-const myList: List<number> = cons(1, cons(2, cons(3, nil)));
-const myList2: List<number> = nil;
+const myList: L.List<number> = L.cons(1, L.cons(2, L.cons(3, L.nil)));
+const myList2: L.List<number> = L.nil;
 const result = match(
   () => `list is empty`,
-  (head: number, tail: List<number>) => `head is ${head}`
-  // )(myList);
-)(myList2);
+  (head: number, tail: L.List<number>) => `head is ${head}`
+)(myList);
+// )(myList2);
 
 console.log(result);

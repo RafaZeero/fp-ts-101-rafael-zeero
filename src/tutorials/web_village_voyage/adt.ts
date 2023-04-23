@@ -82,8 +82,13 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 
 // 📜 Either
-type Match = <E, A, B>(onLeft: (e: E) => B, onRight: (a: A) => B) => (x: E.Either<E, A>) => B;
-const match: Match = (onLeft, onRight) => x => E.isLeft(x) ? onLeft(x.left) : onRight(x.right);
+type MatchW = <E, A, B, C>(
+  onLeft: (e: E) => B,
+  onRight: (a: A) => C
+) => (x: E.Either<E, A>) => B | C;
+const match: MatchW = (onLeft, onRight) => x => E.isLeft(x) ? onLeft(x.left) : onRight(x.right);
+// // * Match in fp-ts === Fold!
+// // * MatchW in fp-ts === FoldW!
 
 const errorOrNum = E.right(20);
 const errorOrNum2 = E.left('Not a number');

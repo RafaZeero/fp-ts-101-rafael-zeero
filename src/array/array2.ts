@@ -12,3 +12,16 @@ const printSelf = pipe(
 );
 
 console.log(printSelf);
+
+const names: O.Option<string>[] = [O.some('anthony'), O.none, O.some('gabriele')];
+
+const allNamesFailure: O.Option<Array<string>> = pipe(names, A.sequence(O.option));
+console.log({ allNamesFailure });
+// allNamesFailure = O.none
+
+const allNamesSuccess: O.Option<Array<string>> = pipe(
+  [O.some('anthony'), O.some('gabriele')],
+  A.sequence(O.option)
+);
+console.log({ allNamesSuccess });
+// allNamesSuccess = O.some(['anthony', 'gabriele'])

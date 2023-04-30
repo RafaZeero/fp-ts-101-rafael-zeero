@@ -119,7 +119,8 @@ type Match = <A, B>(
   onNil: () => B,
   onCons: (head: A, tail: L.List<A>) => B
 ) => (xs: L.List<A>) => B;
-const match: Match = (onNil, onCons) => xs => L.isNil(xs) ? onNil() : onCons(xs.head, xs.tail);
+export const match: Match = (onNil, onCons) => xs =>
+  L.isNil(xs) ? onNil() : onCons(xs.head, xs.tail);
 
 const myList: L.List<number> = L.cons(1, L.cons(2, L.cons(3, L.nil)));
 const myList2: L.List<number> = L.nil;
@@ -129,4 +130,4 @@ const result = match(
 )(myList);
 // )(myList2);
 
-console.log(result);
+// console.log(result);

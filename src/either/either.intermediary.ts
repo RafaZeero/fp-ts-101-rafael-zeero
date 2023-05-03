@@ -45,5 +45,5 @@ const either02 = () =>
     log('either02 :')
   );
 
-// either01();
-// either02()
+either01();
+either02();

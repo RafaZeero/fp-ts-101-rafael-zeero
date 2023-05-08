@@ -31,58 +31,52 @@ const exampleTwo = divideTwoIfEvenO(10);
 
 // * * * * * * * * * * * * * * * * * * //
 
-type Left<E> = {
+// * Either
+
+type Left<L> = {
   readonly _tag: 'Left';
-  readonly left: E;
+  readonly left: L;
 };
 
-type Right<A> = {
+type Right<R> = {
   readonly _tag: 'Right';
-  readonly right: A;
+  readonly right: R;
 };
 
-type Either<E, A> = Left<E> | Right<A>;
+type Either<L, R> = Left<L> | Right<R>;
 
 let result: Either<string, number>;
 
-result = { right: -4, _tag: 'Right' };
-result = { right: 124, _tag: 'Right' };
-result = { right: 756, _tag: 'Right' };
-result = { right: 0, _tag: 'Right' };
+result = { _tag: 'Right', right: -4 };
+result = { _tag: 'Right', right: 124 };
+result = { _tag: 'Right', right: 756 };
+result = { _tag: 'Right', right: 0 };
 
-result = { left: 'Permission denied', _tag: 'Left' };
-result = { left: 'Invalid data', _tag: 'Left' };
-result = { left: 'WTF BRO?', _tag: 'Left' };
+result = { _tag: 'Left', left: 'Permission denied' };
+result = { _tag: 'Left', left: 'Invalid data' };
+result = { _tag: 'Left', left: 'WTF BRO?' };
 
-const left = <E, A = never>(e: E): Either<E, A> => ({
+const left = <L, R = never>(e: L): Either<L, R> => ({
   _tag: 'Left',
   left: e
 });
 
-const right = <A, E = never>(a: A): Either<E, A> => ({
+const right = <R, L = never>(a: R): Either<L, R> => ({
   _tag: 'Right',
   right: a
 });
 
-const isLeft = <E, A>(ma: Either<E, A>): ma is Left<E> => ma._tag === 'Left';
-const isRight = <E, A>(ma: Either<E, A>): ma is Right<A> => ma._tag === 'Right';
+const isLeft = <L, R>(ma: Either<L, R>): ma is Left<L> => ma._tag === 'Left';
 
-const tenR = left(10);
-//     ^?
+const isRight = <L, R>(ma: Either<L, R>): ma is Right<R> => ma._tag === 'Right';
 
-// isLeft(tenR) ? console.log('I am a Left type') : console.log('I am a Right type');
-// ^?
+// * Examples
 
-//                                      Either<Left  , Right>
-function divideTwoIfEvenE(num: number): Either<string, number> {
-  if (num === 0) return left('Cannot divide by zero.');
-
-  if (num % 2 !== 0) return left('Number is not even.');
-
-  return right(2 / num);
-}
+// To exercises...
 
 // * * * * * * * * * * * * * * * * * * //
+
+// * Pipe, compose
 
 const pipe =
   <T extends (...args: Array<any>) => any>(...args: Array<T>) =>
@@ -90,9 +84,16 @@ const pipe =
     args.reduce((value, fn) => fn(value), x);
 
 const compose =
-  (x: any) =>
   <T extends (...args: Array<any>) => any>(...args: Array<T>) =>
-    args.reduce((value, fn) => fn(value), x);
+  (x: any) =>
+    args.reduceRight((value, fn) => fn(value), x);
+
+// * Examples
+
+pipe(
+  x => x * 2,
+  x => x * 2
+)(10);
 
 function typedPipe<A>(a: A): A;
 function typedPipe<A, B>(a: A, firstFn: (a: A) => B): B;
@@ -109,16 +110,21 @@ function typedPipe<A, B, C>(a: A, firstFn?: (a: A) => B, secondFn?: (b: B) => C)
   return a;
 }
 
-const sum2With = typedPipe(
-  false,
-  x => x,
-  x => x
+const double = (number: number) => 2 * number;
+const triple = (number: number) => 3 * number;
+
+const asString: string = typedPipe(
+  10,
+  () => 2,
+  x => `${x}`
 );
 
-const sum2 = compose(2)(
+const sum2With = typedPipe(2, O.fromNullable, O.map(double));
+
+const sum2 = compose(
   x => x + 1,
   x => x + 1
-);
+)(2);
 
 console.log(sum2With);
 // console.log(sum2);
